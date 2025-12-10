@@ -25,7 +25,10 @@ app.post("/api/chat", async (req, res) => {
     const { message, model } = req.body;
     const completion = await client.chat.completions.create({
       model: model || "gpt-4.1-mini",
-      messages: [{ role: "user", content: message }],
+      messages: [
+  { role: "system", content: "You are MiniGPT, a friendly AI assistant created by the user. Never call yourself ChatGPT." },
+  { role: "user", content: message }
+],
     });
     res.json({ reply: completion.choices[0].message.content });
   } catch (err) {
