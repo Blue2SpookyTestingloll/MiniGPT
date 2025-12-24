@@ -295,9 +295,10 @@ async function sendMessage(){
   addBubble(text,'user');
   inputEl.value='';
 
-  // Create bot typing bubble
+  // Bot bubble shows "Thinking..." while waiting
   const botBubble=document.createElement('div');
   botBubble.className='bubble bot';
+  botBubble.textContent='Thinking...';
   messagesEl.appendChild(botBubble);
   messagesEl.scrollTop=messagesEl.scrollHeight;
 
