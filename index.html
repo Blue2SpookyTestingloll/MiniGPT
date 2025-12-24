@@ -74,7 +74,7 @@
     max-width:820px;
     display:flex;
     flex-direction:column;
-    margin:0 170px; /* space for side ads */
+    margin:0 170px;
   }
 
   .messages{
@@ -219,9 +219,7 @@
        data-ad-client="ca-pub-7906162290869645"
        data-ad-slot="3907164760"
        data-ad-format="auto"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <div class="ad-sidebar-right">
@@ -232,9 +230,7 @@
        data-ad-client="ca-pub-7906162290869645"
        data-ad-slot="3907164760"
        data-ad-format="auto"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <!-- Chat area -->
@@ -258,14 +254,14 @@
 </div>
 
 <script>
-const messagesEl = document.getElementById('messages');
-const inputEl = document.getElementById('input');
-const sendBtn = document.getElementById('sendBtn');
-const modelSelect = document.getElementById('modelSelect');
-const newChatBtn = document.getElementById('newChatBtn');
-const themeToggle = document.getElementById("themeToggle");
+const messagesEl=document.getElementById('messages');
+const inputEl=document.getElementById('input');
+const sendBtn=document.getElementById('sendBtn');
+const modelSelect=document.getElementById('modelSelect');
+const newChatBtn=document.getElementById('newChatBtn');
+const themeToggle=document.getElementById("themeToggle");
 
-let chatHistory = [];
+let chatHistory=[];
 
 function formatMarkdown(text){
   return text.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
@@ -282,14 +278,31 @@ function addBubble(text, cls){
   messagesEl.scrollTop=messagesEl.scrollHeight;
 }
 
+function typeText(bubble, text, speed=25){
+  bubble.innerHTML="";
+  let i=0;
+  const interval=setInterval(()=>{
+    bubble.innerHTML+=text.charAt(i);
+    i++;
+    messagesEl.scrollTop=messagesEl.scrollHeight;
+    if(i>=text.length) clearInterval(interval);
+  }, speed);
+}
+
 async function sendMessage(){
   const text=inputEl.value.trim();
   if(!text) return;
   addBubble(text,'user');
   inputEl.value='';
-  addBubble('…','bot');
-  const loadingBubble=messagesEl.lastChild;
+
+  // Create bot typing bubble
+  const botBubble=document.createElement('div');
+  botBubble.className='bubble bot';
+  messagesEl.appendChild(botBubble);
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+
   chatHistory.push({role:"user", content:text});
+
   try{
     const res=await fetch('https://mini-gpt-backend.vercel.app/api/chat',{
       method:'POST',
@@ -297,10 +310,10 @@ async function sendMessage(){
       body:JSON.stringify({message:text, model:modelSelect.value, history:chatHistory})
     });
     const data=await res.json();
-    loadingBubble.innerHTML=formatMarkdown(data.reply || 'No reply');
     chatHistory.push({role:"assistant", content:data.reply || ''});
+    typeText(botBubble, data.reply || '');
   }catch(e){
-    loadingBubble.textContent='Error: '+e.message;
+    botBubble.textContent='Error: '+e.message;
   }
 }
 
