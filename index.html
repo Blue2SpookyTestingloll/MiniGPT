@@ -32,22 +32,23 @@
       padding:0;
       background:var(--bg);
       display:flex;
-      flex-direction:row; /* Changed for sidebar layout */
+      flex-direction:column;
       height:100vh;
       color:var(--text);
       transition: background 0.3s, color 0.3s;
     }
 
-    .ad-sidebar{
-      width:160px; /* Fixed sidebar width */
+    header{
       background:var(--panel);
-      border-left:1px solid var(--border);
-      border-right:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      padding:14px 22px;
+      font-size:18px;
+      font-weight:600;
       display:flex;
-      flex-direction:column;
+      justify-content:space-between;
       align-items:center;
-      padding:12px 0;
-      overflow-y:auto;
+      z-index: 10;
+      position: relative;
     }
 
     .chat-wrapper{
@@ -55,6 +56,8 @@
       display:flex;
       justify-content:center;
       overflow:hidden;
+      position: relative;
+      margin: 0 170px; /* leave space for side ads */
     }
 
     .chat{
@@ -143,6 +146,7 @@
       box-shadow:0 4px 12px rgba(0,0,0,0.15);
       cursor:pointer;
       border:none;
+      z-index: 10;
     }
 
     #themeToggle{
@@ -172,11 +176,46 @@
     .adsbygoogle{
       margin:12px 0;
     }
+
+    /* Sidebar ads */
+    .ad-sidebar-left,
+    .ad-sidebar-right {
+      position: fixed;
+      top: 80px; /* below header */
+      width: 160px;
+      height: 600px;
+    }
+
+    .ad-sidebar-left { left: 0; }
+    .ad-sidebar-right { right: 0; }
+
+    @media (max-width: 1000px) {
+      .ad-sidebar-left, .ad-sidebar-right {
+        display: none; /* hide side ads on smaller screens */
+      }
+      .chat-wrapper {
+        margin: 0 20px; /* reduce side margin on mobile */
+      }
+    }
   </style>
 </head>
 <body>
   <!-- Left Sidebar Ad -->
-  <div class="ad-sidebar">
+  <div class="ad-sidebar-left">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906162290869645"
+      crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+         style="display:block;width:160px;height:600px"
+         data-ad-client="ca-pub-7906162290869645"
+         data-ad-slot="3907164760"
+         data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <!-- Right Sidebar Ad -->
+  <div class="ad-sidebar-right">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906162290869645"
       crossorigin="anonymous"></script>
     <ins class="adsbygoogle"
@@ -216,25 +255,10 @@
       <button id="newChatBtn">New Chat</button>
       <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
 
-      <!-- Footer with Privacy Policy -->
       <footer>
         <p><a href="/privacy-policy.html">Privacy Policy</a></p>
       </footer>
     </div>
-  </div>
-
-  <!-- Right Sidebar Ad -->
-  <div class="ad-sidebar">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906162290869645"
-      crossorigin="anonymous"></script>
-    <ins class="adsbygoogle"
-         style="display:block;width:160px;height:600px"
-         data-ad-client="ca-pub-7906162290869645"
-         data-ad-slot="3907164760"
-         data-ad-format="auto"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
   </div>
 
   <script>
