@@ -32,21 +32,22 @@
       padding:0;
       background:var(--bg);
       display:flex;
-      flex-direction:column;
+      flex-direction:row; /* Changed for sidebar layout */
       height:100vh;
       color:var(--text);
       transition: background 0.3s, color 0.3s;
     }
 
-    header{
+    .ad-sidebar{
+      width:160px; /* Fixed sidebar width */
       background:var(--panel);
-      border-bottom:1px solid var(--border);
-      padding:14px 22px;
-      font-size:18px;
-      font-weight:600;
+      border-left:1px solid var(--border);
+      border-right:1px solid var(--border);
       display:flex;
-      justify-content:space-between;
+      flex-direction:column;
       align-items:center;
+      padding:12px 0;
+      overflow-y:auto;
     }
 
     .chat-wrapper{
@@ -168,28 +169,42 @@
       margin:12px 0;
     }
 
-    .ads-container{
-      text-align:center;
+    .adsbygoogle{
       margin:12px 0;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>MiniGPT</div>
-    <div>
-      Model:
-      <select id="modelSelect">
-        <option value="gpt-4.1-mini">gpt-4.1-mini</option>
-        <option value="gpt-4o-mini">gpt-4o-mini</option>
-        <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-      </select>
-      <button id="themeToggle">🌙 Dark Mode</button>
-    </div>
-  </header>
+  <!-- Left Sidebar Ad -->
+  <div class="ad-sidebar">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906162290869645"
+      crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+         style="display:block;width:160px;height:600px"
+         data-ad-client="ca-pub-7906162290869645"
+         data-ad-slot="3907164760"
+         data-ad-format="auto"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
 
+  <!-- Main Chat -->
   <div class="chat-wrapper">
     <div class="chat">
+      <header>
+        <div>MiniGPT</div>
+        <div>
+          Model:
+          <select id="modelSelect">
+            <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+            <option value="gpt-4o-mini">gpt-4o-mini</option>
+            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+          </select>
+          <button id="themeToggle">🌙 Dark Mode</button>
+        </div>
+      </header>
+
       <div class="messages" id="messages"></div>
       <div class="composer">
         <div class="composer-inner">
@@ -197,27 +212,26 @@
           <button id="sendBtn">Send</button>
         </div>
       </div>
+
+      <button id="newChatBtn">New Chat</button>
+      <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
+
+      <!-- Footer with Privacy Policy -->
+      <footer>
+        <p><a href="/privacy-policy.html">Privacy Policy</a></p>
+      </footer>
     </div>
   </div>
 
-  <button id="newChatBtn">New Chat</button>
-  <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
-
-  <!-- Footer with Privacy Policy -->
-  <footer>
-    <p><a href="/privacy-policy.html">Privacy Policy</a></p>
-  </footer>
-
-  <!-- Responsive AdSense Footer Ad -->
-  <div class="ads-container">
+  <!-- Right Sidebar Ad -->
+  <div class="ad-sidebar">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7906162290869645"
       crossorigin="anonymous"></script>
     <ins class="adsbygoogle"
-         style="display:block"
+         style="display:block;width:160px;height:600px"
          data-ad-client="ca-pub-7906162290869645"
          data-ad-slot="3907164760"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
+         data-ad-format="auto"></ins>
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
