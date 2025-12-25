@@ -305,14 +305,26 @@ async function sendMessage(){
   chatHistory.push({role:"user", content:text});
 
   try{
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000); // 15s timeout
+
     const res=await fetch('https://mini-gpt-backend.vercel.app/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:text, model:modelSelect.value, history:chatHistory})
+      body:JSON.stringify({message:text, model:modelSelect.value, history:chatHistory}),
+      signal:controller.signal
     });
+    clearTimeout(timeout);
+
+    if(!res.ok) throw new Error('API error: '+res.status);
+
     const data=await res.json();
-    chatHistory.push({role:"assistant", content:data.reply || ''});
-    typeText(botBubble, data.reply || '');
+
+    if(!data.reply) throw new Error('No reply received');
+
+    chatHistory.push({role:"assistant", content:data.reply});
+    typeText(botBubble, data.reply);
+
   }catch(e){
     botBubble.textContent='Error: '+e.message;
   }
