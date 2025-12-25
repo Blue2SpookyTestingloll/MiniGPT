@@ -53,6 +53,36 @@
     align-items:center;
   }
 
+  .container{
+    flex:1;
+    display:flex;
+    overflow:hidden;
+  }
+
+  /* Chats sidebar */
+  #chatTab{
+    width:200px;
+    background:#f0f0f0;
+    border-right:1px solid var(--border);
+    padding:10px;
+    overflow-y:auto;
+  }
+
+  #chatTab button{
+    width:100%;
+    margin-bottom:5px;
+    text-align:left;
+    padding:5px 8px;
+    background:white;
+    color:#111;
+  }
+
+  #chatTab button.active{
+    background:var(--accent);
+    color:white;
+  }
+
+  /* Main chat area */
   .chat-wrapper{
     flex:1;
     display:flex;
@@ -187,19 +217,27 @@
     </div>
   </header>
 
-  <div class="chat-wrapper">
-    <div class="chat">
-      <div class="messages" id="messages"></div>
-      <div class="composer">
-        <div class="composer-inner">
-          <textarea id="input" placeholder="Message MiniGPT..."></textarea>
-          <button id="sendBtn">Send</button>
+  <div class="container">
+    <!-- Chats Sidebar -->
+    <div id="chatTab">
+      <button onclick="newChat()">+ New Chat</button>
+      <div id="chatList"></div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-wrapper">
+      <div class="chat">
+        <div class="messages" id="messages"></div>
+        <div class="composer">
+          <div class="composer-inner">
+            <textarea id="input" placeholder="Message MiniGPT..."></textarea>
+            <button id="sendBtn">Send</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <button id="newChatBtn">New Chat</button>
   <p class="disclaimer">MiniGPT — made by SasoPlayzYT</p>
 
   <footer>
@@ -213,8 +251,11 @@
     const modelSelect = document.getElementById('modelSelect');
     const newChatBtn = document.getElementById('newChatBtn');
     const themeToggle = document.getElementById("themeToggle");
+    const chatListEl = document.getElementById("chatList");
 
     let chatHistory = [];
+    let currentChatId = null;
+    let currentChatName = null;
 
     function formatMarkdown(text) {
       return text
@@ -232,6 +273,58 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
+    // Save chat to localStorage
+    function saveChat(){
+      if(!currentChatId) return;
+      const data = JSON.parse(localStorage.getItem('miniGPT_chats') || '{"chats":[]}');
+      const existing = data.chats.find(c => c.id === currentChatId);
+      if(existing){
+        existing.history = chatHistory;
+      } else {
+        data.chats.push({ id: currentChatId, name: currentChatName, history: chatHistory });
+      }
+      localStorage.setItem('miniGPT_chats', JSON.stringify(data));
+      loadChatList();
+    }
+
+    // Load all chats in sidebar
+    function loadChatList(){
+      const data = JSON.parse(localStorage.getItem('miniGPT_chats') || '{"chats":[]}').chats;
+      chatListEl.innerHTML = '';
+      data.forEach(chat => {
+        const btn = document.createElement('button');
+        btn.textContent = chat.name;
+        btn.className = chat.id === currentChatId ? 'active' : '';
+        btn.onclick = ()=>loadChat(chat.id);
+        chatListEl.appendChild(btn);
+      });
+    }
+
+    // Load chat into main area
+    function loadChat(chatId){
+      const data = JSON.parse(localStorage.getItem('miniGPT_chats') || '{"chats":[]}').chats;
+      const chat = data.find(c => c.id === chatId);
+      if(!chat) return;
+      messagesEl.innerHTML = '';
+      chat.history.forEach(m => addBubble(m.content, m.role==='user'?'user':'bot'));
+      chatHistory = [...chat.history];
+      currentChatId = chat.id;
+      currentChatName = chat.name;
+      loadChatList();
+    }
+
+    function newChat(){
+      const name = 'Chat ' + new Date().toLocaleString();
+      const id = 'chat-' + Date.now();
+      messagesEl.innerHTML = '';
+      chatHistory = [];
+      addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
+      currentChatId = id;
+      currentChatName = name;
+      saveChat();
+    }
+
+    // Typing animation & sending
     async function sendMessage(){
       const text = inputEl.value.trim();
       if(!text) return;
@@ -245,6 +338,7 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
 
       chatHistory.push({ role: "user", content: text });
+      saveChat();
 
       try{
         const res = await fetch('https://mini-gpt-backend.vercel.app/api/chat',{
@@ -269,34 +363,30 @@
         },25);
 
         chatHistory.push({ role: "assistant", content: reply });
-
+        saveChat();
       }catch(e){
         botBubble.textContent='Error: '+e.message;
       }
     }
 
     sendBtn.onclick = sendMessage;
-    inputEl.addEventListener('keydown', e => {
-      if(e.key === 'Enter' && !e.shiftKey){
+    inputEl.addEventListener('keydown', e=>{
+      if(e.key==='Enter'&&!e.shiftKey){
         e.preventDefault();
         sendMessage();
       }
     });
 
-    newChatBtn.onclick = ()=>{
-      messagesEl.innerHTML='';
-      chatHistory=[];
-      addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
-    };
+    newChatBtn.onclick = ()=>newChat();
 
     themeToggle.onclick = ()=>{
       document.body.classList.toggle("dark-mode");
-      themeToggle.textContent=document.body.classList.contains("dark-mode")
-        ? "☀️ Light Mode"
-        : "🌙 Dark Mode";
+      themeToggle.textContent=document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
     };
 
-    addBubble("Hello! I'm MiniGPT — ask me anything!",'bot');
+    // Initialize
+    newChat();
+    loadChatList();
   </script>
 </body>
 </html>
